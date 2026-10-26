@@ -4,13 +4,13 @@ A private, installable speaking companion for iPhone, Android, and desktop. Buil
 
 ## Run locally
 
-Use Node 22 or newer. Run `npm ci`, `npm run dev`. The frontend works without a database. Local Vite does not emulate the Vercel API, so cloud backup reports that the device copy is saved. To test the full backend, use a Vercel environment configured with a Neon connection string.
+Use Node 24. Run `npm ci`, `npm run dev`. The frontend works without a database. Local Vite does not emulate the Vercel API, so cloud backup reports that the device copy is saved. To test the full backend, use a Vercel environment configured with a Neon connection string.
 
 `npm test` runs reliability and API boundary tests. `npm run build` gates deployment on those tests, type-checks, builds, and generates a versioned offline app shell. `npm run preview` serves that production build. `npx tsx scripts/smoke-production.ts` verifies encrypted writes, reads, isolation, and revision conflicts using its own temporary test vault on the production URL (override with `BASE_URL`).
 
 ## Deployment
 
-Repository: `MrCoolition/speakeasy`. Production branch: `main`. Vercel project: `speakeasy`, team `coolition`. The project uses the Vite preset and the `dist` output directory. Vercel builds the root `api/vault.ts` as a Node function. A push to `main` triggers the existing Git integration.
+Repository: `MrCoolition/speakeasy`. Production branch: `main`. Vercel project: `speakeasy`, team `coolition`. The project uses the Vite preset and the `dist` output directory. Vercel packages `api/vault.js` as a Node function; its JSDoc types are checked by TypeScript during the build. A push to `main` triggers the existing Git integration.
 
 The existing server-only production variable is **`neon_connect`**. `DATABASE_URL` and `POSTGRES_URL` are supported alternatives. Never prefix this with `VITE_`, commit connection strings, or expose database values to the client. The backend creates its additive `speakeasy_vaults` table on first use. No existing data is modified.
 
