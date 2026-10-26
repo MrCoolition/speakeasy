@@ -6,7 +6,7 @@ A private, installable speaking companion for iPhone, Android, and desktop. Buil
 
 Use Node 22 or newer. Run `npm ci`, `npm run dev`. The frontend works without a database. Local Vite does not emulate the Vercel API, so cloud backup reports that the device copy is saved. To test the full backend, use a Vercel environment configured with a Neon connection string.
 
-`npm test` runs reliability and API boundary tests. `npm run build` type-checks, builds, and generates a versioned offline app shell. `npm run preview` serves that production build.
+`npm test` runs reliability and API boundary tests. `npm run build` gates deployment on those tests, type-checks, builds, and generates a versioned offline app shell. `npm run preview` serves that production build. `npx tsx scripts/smoke-production.ts` verifies encrypted writes, reads, isolation, and revision conflicts using its own temporary test vault on the production URL (override with `BASE_URL`).
 
 ## Deployment
 

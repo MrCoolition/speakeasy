@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import handler from '../api/vault';
+// These boundary tests intentionally run without a database, including in Vercel builds.
+delete process.env.neon_connect;
+delete process.env.DATABASE_URL;
+delete process.env.POSTGRES_URL;
 async function request(method: string, headers: Record<string,string> = {}) {
   let status = 200; let result: unknown; const responseHeaders = new Map();
   const res = { setHeader: (key:string,value:string) => responseHeaders.set(key,value), status: (code:number) => {status=code;return res;}, json: (body:unknown)=> {result=body;} };

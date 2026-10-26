@@ -57,8 +57,8 @@ export function Stage({ session, preferences, offlineReady, onExit }: { session:
   useEffect(() => {
     const handle = (e: KeyboardEvent) => {
       if (exitConfirm || finished) return;
-      if (['ArrowRight', 'ArrowDown', 'PageDown'].includes(e.key)) { e.preventDefault(); next(); }
-      if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); previous(); }
+      if (view === 'cards' && ['ArrowRight', 'ArrowDown', 'PageDown'].includes(e.key)) { e.preventDefault(); next(); }
+      if (view === 'cards' && ['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); previous(); }
       if (e.code === 'Space') { e.preventDefault(); setRunning(r => !r); }
       if (e.key === 'Escape') { setRunning(false); setExitConfirm(true); }
     };
@@ -92,7 +92,7 @@ export function Stage({ session, preferences, offlineReady, onExit }: { session:
     </div>
     <footer className="stage-footer">
       <div className="stage-status"><ShieldCheck size={15}/><span>{saveFailed ? 'Recovery save unavailable' : offlineReady ? 'Offline ready' : 'Script loaded'}<small>{wake ? 'Screen stays awake' : 'Check your screen auto-lock'}</small></span></div>
-      <div className="stage-controls"><button aria-label="Previous cue" disabled={index === 0 || view === 'script'} onClick={previous}><ChevronLeft/></button><button className="play-control" onClick={() => setRunning(r => !r)}>{running ? <Pause size={19} fill="currentColor"/> : <Play size={19} fill="currentColor"/>}<span>{running ? 'Pause' : elapsed < 1 ? 'Begin' : 'Resume'}</span></button><button className="next-control" aria-label={index === blocks.length - 1 ? 'Finish speech' : 'Next cue'} onClick={next}>{index === blocks.length - 1 ? <Check/> : <ChevronRight/>}</button></div>
+      <div className="stage-controls"><button aria-label="Previous cue" disabled={index === 0 || view === 'script'} onClick={previous}><ChevronLeft/></button><button className="play-control" onClick={() => setRunning(r => !r)}>{running ? <Pause size={19} fill="currentColor"/> : <Play size={19} fill="currentColor"/>}<span>{running ? 'Pause' : elapsed < 1 ? 'Begin' : 'Resume'}</span></button><button className="next-control" aria-label={view === 'script' || index === blocks.length - 1 ? 'Finish speech' : 'Next cue'} onClick={() => { if (view === 'script') { setRunning(false); setFinished(true); } else next(); }}>{view === 'script' || index === blocks.length - 1 ? <Check/> : <ChevronRight/>}</button></div>
       <label className="auto-control"><input type="checkbox" checked={auto} disabled={view === 'script'} onChange={e => { setAuto(e.target.checked); cueStart.current = elapsedRef.current; }}/><span>Auto advance<small>{preferences.pace} words / min</small></span></label>
     </footer>
     {(exitConfirm || finished) && <Modal title={finished ? 'A moment well spoken.' : 'Leave the stage?'} onClose={() => { setExitConfirm(false); setFinished(false); }}><p className="modal-description">{finished ? `You gave your words ${clock(elapsed)} of attention.${session.mode === 'rehearse' ? ' Your rehearsal will be saved.' : ' Take a breath. You did it.'}` : 'Your script is saved. Leaving ends this session; staying keeps your place and timer.'}</p><div className="modal-actions"><button className="button secondary" onClick={() => { setExitConfirm(false); setFinished(false); }}>{finished ? 'Keep reviewing' : 'Stay here'}</button><button className="button primary" onClick={() => leave(finished)}>{finished ? 'Back to my speeches' : 'End session'}<ArrowRight size={17}/></button></div></Modal>}
